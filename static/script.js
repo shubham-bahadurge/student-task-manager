@@ -75,10 +75,23 @@ function loadTasks() {
 
                 const taskTextElement = document.createElement("span");
 
-                taskTextElement.textContent =
-                    "📚 " + subject +
-                    " — 📌 " + taskText +
-                    " — 📅 " + deadline;
+                let deadlineStatus = "";
+
+if (deadline) {
+    const today = new Date().toISOString().split("T")[0];
+
+    if (deadline < today) {
+        deadlineStatus = " 🔴 Overdue";
+    } else {
+        deadlineStatus = " 🟢 Upcoming";
+    }
+}
+
+taskTextElement.textContent =
+    "📚 " + subject +
+    " — 📌 " + taskText +
+    " — 📅 " + deadline +
+    deadlineStatus;
 
                 task.appendChild(taskTextElement);
 
