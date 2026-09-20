@@ -156,8 +156,13 @@ function loadTasks() {
                     .then(data => {
                         task.remove();
 
-                        document.getElementById("taskCount").textContent =
-                            "Total Tasks: " + taskList.children.length;
+                       if (taskList.children.length === 0) {
+    taskList.innerHTML = "<p>No tasks yet. Add your first task! 📚</p>";
+    document.getElementById("taskCount").textContent = "Total Tasks: 0";
+} else {
+    document.getElementById("taskCount").textContent =
+        "Total Tasks: " + taskList.children.length;
+}
 
                         alert(data.message);
                     });
@@ -174,6 +179,9 @@ function loadTasks() {
 
             document.getElementById("taskCount").textContent =
                 "Total Tasks: " + taskList.children.length;
+if (taskList.children.length === 0) {
+    taskList.innerHTML = "<p>No tasks yet. Add your first task! 📚</p>";
+}
         })
         .catch(error => {
             console.error("Error loading tasks:", error);
