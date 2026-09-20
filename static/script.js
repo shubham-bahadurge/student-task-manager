@@ -1,217 +1,497 @@
 function addTask() {
-    const input = document.querySelector("input[placeholder='Enter your task']");
-    const subjectInput = document.getElementById("subject");
-    const deadlineInput = document.getElementById("deadline");
 
-    const taskText = input.value;
-    const subject = subjectInput.value;
-    const deadline = deadlineInput.value;
+    const subjectInput =
+        document.getElementById("subject");
+
+    const taskInput =
+        document.getElementById("taskInput");
+
+    const deadlineInput =
+        document.getElementById("deadline");
+
+
+    const subject =
+        subjectInput.value.trim();
+
+    const taskText =
+        taskInput.value.trim();
+
+    const deadline =
+        deadlineInput.value;
+
 
     if (taskText === "") {
+
         alert("Please enter a task!");
+
         return;
     }
 
+
     fetch("/add_task", {
+
         method: "POST",
+
         headers: {
             "Content-Type": "application/json"
         },
+
         body: JSON.stringify({
+
             subject: subject,
+
             task: taskText,
+
             deadline: deadline
+
         })
+
     })
+
     .then(response => response.json())
+
     .then(data => {
+
         alert(data.message);
+
+        subjectInput.value = "";
+
+        taskInput.value = "";
+
+        deadlineInput.value = "";
+
         loadTasks();
 
-        input.value = "";
-        subjectInput.value = "";
-        deadlineInput.value = "";
+    })
+
+    .catch(error => {
+
+        console.error(
+            "Error adding task:",
+            error
+        );
+
     });
 }
+
 
 
 function clearTasks() {
-    const taskList = document.getElementById("taskList");
+
+    if (!confirm("Delete all tasks?")) {
+
+        return;
+    }
+
 
     fetch("/clear_tasks", {
+
         method: "DELETE"
+
     })
+
     .then(response => response.json())
+
     .then(data => {
-        taskList.innerHTML = "";
-
-        document.getElementById("taskCount").textContent =
-            "Total Tasks: 0";
-
-        document.getElementById("completedCount").textContent =
-            "Completed: 0";
 
         alert(data.message);
+
+        loadTasks();
+
+    })
+
+    .catch(error => {
+
+        console.error(
+            "Error clearing tasks:",
+            error
+        );
+
     });
 }
+
 
 
 function loadTasks() {
+
     fetch("/get_tasks")
+
         .then(response => response.json())
+
         .then(tasks => {
-            const taskList = document.getElementById("taskList");
+
+            const taskList =
+                document.getElementById("taskList");
+
 
             taskList.innerHTML = "";
 
+
             tasks.forEach(taskData => {
-                const taskId = taskData[0];
-                const subject = taskData[1];
-                const taskText = taskData[2];
-                const deadline = taskData[3];
-                const completed = taskData[4];
 
-                const task = document.createElement("p");
+                const taskId =
+                    taskData[0];
 
-                const taskTextElement = document.createElement("span");
+                const subject =
+                    taskData[1];
+
+                const taskText =
+                    taskData[2];
+
+                const deadline =
+                    taskData[3];
+
+                const completed =
+                    taskData[4];
+
+
+                const task =
+                    document.createElement("p");
+
+
+                const taskTextElement =
+                    document.createElement("span");
+
+
+                /*
+                    Deadline Status
+                */
 
                 let deadlineStatus = "";
 
-if (deadline) {
-    const today = new Date().toISOString().split("T")[0];
 
-    if (deadline < today) {
-        deadlineStatus = " 🔴 Overdue";
-    } else {
-        deadlineStatus = " 🟢 Upcoming";
-    }
-}
+                if (deadline) {
 
-taskTextElement.textContent =
-    "📚 " + subject +
-    " — 📌 " + taskText +
-    " — 📅 " + deadline +
-    deadlineStatus;
-
-                task.appendChild(taskTextElement);
+                    const today =
+                        new Date()
+                            .toISOString()
+                            .split("T")[0];
 
 
-                // Complete button
-                const completeButton = document.createElement("button");
-                completeButton.textContent = "✅ Complete";
+                    if (deadline < today) {
 
-                completeButton.onclick = function() {
-                    fetch("/complete_task/" + taskId, {
-                        method: "PUT"
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        taskTextElement.style.textDecoration =
-                            "line-through";
+                        deadlineStatus =
+                            " 🔴 Overdue";
 
-                        completeButton.disabled = true;
+                    } else {
 
-                        alert(data.message);
+                        deadlineStatus =
+                            " 🟢 Upcoming";
 
-                        loadTasks();
-                    });
-                };
+                    }
 
-                task.appendChild(completeButton);
+                }
 
 
-                // Delete button
-                const deleteButton = document.createElement("button");
-                deleteButton.textContent = "🗑️ Delete";
+                /*
+                    Task Text
+                */
 
-                deleteButton.onclick = function() {
-                    fetch("/delete_task/" + taskId, {
-                        method: "DELETE"
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.message);
-
-                        loadTasks();
-                    });
-                };
-
-                task.appendChild(deleteButton);
+                taskTextElement.textContent =
+                    "📚 " + subject +
+                    " — 📌 " + taskText +
+                    " — 📅 " + deadline +
+                    deadlineStatus;
 
 
-                // Show completed task
+                task.appendChild(
+                    taskTextElement
+                );
+
+
+                /*
+                    Complete Button
+                */
+
+                const completeButton =
+                    document.createElement("button");
+
+
+                completeButton.textContent =
+                    "✅ Complete";
+
+
+                completeButton.onclick =
+                    function () {
+
+                        fetch(
+                            "/complete_task/" +
+                            taskId,
+                            {
+                                method: "PUT"
+                            }
+                        )
+
+                        .then(response =>
+                            response.json()
+                        )
+
+                        .then(data => {
+
+                            alert(data.message);
+
+                            loadTasks();
+
+                        });
+
+                    };
+
+
+                task.appendChild(
+                    completeButton
+                );
+
+
+                /*
+                    Delete Button
+                */
+
+                const deleteButton =
+                    document.createElement("button");
+
+
+                deleteButton.textContent =
+                    "🗑️ Delete";
+
+
+                deleteButton.onclick =
+                    function () {
+
+                        fetch(
+                            "/delete_task/" +
+                            taskId,
+                            {
+                                method: "DELETE"
+                            }
+                        )
+
+                        .then(response =>
+                            response.json()
+                        )
+
+                        .then(data => {
+
+                            alert(data.message);
+
+                            loadTasks();
+
+                        });
+
+                    };
+
+
+                task.appendChild(
+                    deleteButton
+                );
+
+
+                /*
+                    Show Completed Task
+                */
+
                 if (completed === 1) {
+
                     taskTextElement.style.textDecoration =
                         "line-through";
 
-                    completeButton.disabled = true;
+
+                    completeButton.disabled =
+                        true;
+
                 }
 
+
                 taskList.appendChild(task);
+
             });
 
 
-            // Task counter
-            document.getElementById("taskCount").textContent =
-                "Total Tasks: " + tasks.length;
+            /*
+                Total Task Counter
+            */
+
+            document.getElementById(
+                "taskCount"
+            ).textContent =
+                "Total Tasks: " +
+                tasks.length;
 
 
-            // Completed counter
+            /*
+                Completed Counter
+            */
+
             const completedTasks =
-                tasks.filter(task => task[4] === 1).length;
+                tasks.filter(
+                    task => task[4] === 1
+                ).length;
 
-            document.getElementById("completedCount").textContent =
-                "Completed: " + completedTasks;
+
+            document.getElementById(
+                "completedCount"
+            ).textContent =
+                "Completed: " +
+                completedTasks;
 
 
-            // Empty task message
+            /*
+                Empty Task Message
+            */
+
             if (tasks.length === 0) {
+
                 taskList.innerHTML =
-                    "<p>No tasks yet. Add your first task! 📚</p>";
+                    "<p class='empty-message'>" +
+                    "No tasks yet. Add your first task! 📚" +
+                    "</p>";
+
             }
+
+
+            /*
+                Apply Search / Filter
+            */
+
+            filterTasks();
+
         })
+
         .catch(error => {
-            console.error("Error loading tasks:", error);
+
+            console.error(
+                "Error loading tasks:",
+                error
+            );
+
         });
+
 }
 
 
-loadTasks();
+
 function filterTasks() {
-    const searchText = document
-        .getElementById("searchInput")
-        .value
-        .toLowerCase();
+
+    const searchInput =
+        document.getElementById(
+            "searchInput"
+        );
+
 
     const statusFilter =
-        document.getElementById("statusFilter").value;
+        document.getElementById(
+            "statusFilter"
+        );
+
+
+    const searchText =
+        searchInput.value.toLowerCase();
+
+
+    const selectedStatus =
+        statusFilter.value;
+
 
     const taskItems =
-        document.querySelectorAll("#taskList p");
+        document.querySelectorAll(
+            "#taskList p"
+        );
+
 
     taskItems.forEach(item => {
-        const taskText = item.textContent.toLowerCase();
+
+        /*
+            Don't hide empty message
+        */
+
+        if (
+            item.classList.contains(
+                "empty-message"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        const taskText =
+            item.textContent.toLowerCase();
+
+
+        /*
+            First button = Complete button
+        */
+
+        const completeButton =
+            item.querySelector("button");
+
 
         const isCompleted =
-            item.querySelector("button").disabled;
+            completeButton.disabled;
+
+
+        /*
+            Search condition
+        */
 
         const matchesSearch =
-            taskText.includes(searchText);
+            taskText.includes(
+                searchText
+            );
+
+
+        /*
+            Status condition
+        */
 
         let matchesStatus = true;
 
-        if (statusFilter === "completed") {
-            matchesStatus = isCompleted;
+
+        if (
+            selectedStatus ===
+            "completed"
+        ) {
+
+            matchesStatus =
+                isCompleted;
+
         }
 
-        if (statusFilter === "pending") {
-            matchesStatus = !isCompleted;
+
+        if (
+            selectedStatus ===
+            "pending"
+        ) {
+
+            matchesStatus =
+                !isCompleted;
+
         }
 
-        if (matchesSearch && matchesStatus) {
-            item.style.display = "";
+
+        /*
+            Show / Hide task
+        */
+
+        if (
+            matchesSearch &&
+            matchesStatus
+        ) {
+
+            item.style.display =
+                "";
+
         } else {
-            item.style.display = "none";
+
+            item.style.display =
+                "none";
+
         }
+
     });
+
 }
+
+
+
+loadTasks();

@@ -10,12 +10,12 @@ def init_db():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS tasks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    subject TEXT NOT NULL,
-    task TEXT NOT NULL,
-    deadline TEXT,
-    completed INTEGER DEFAULT 0
-)
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            subject TEXT NOT NULL,
+            task TEXT NOT NULL,
+            deadline TEXT,
+            completed INTEGER DEFAULT 0
+        )
     """)
 
     conn.commit()
@@ -42,7 +42,10 @@ def add_task():
     cursor = conn.cursor()
 
     cursor.execute(
-        "INSERT INTO tasks (subject, task, deadline) VALUES (?, ?, ?)",
+        """
+        INSERT INTO tasks (subject, task, deadline)
+        VALUES (?, ?, ?)
+        """,
         (subject, task, deadline)
     )
 
@@ -64,8 +67,12 @@ def get_tasks():
     cursor = conn.cursor()
 
     cursor.execute(
-    "SELECT id, subject, task, deadline, completed FROM tasks"
-)
+        """
+        SELECT id, subject, task, deadline, completed
+        FROM tasks
+        """
+    )
+
     tasks = cursor.fetchall()
 
     conn.close()
@@ -89,13 +96,19 @@ def delete_task(task_id):
     return jsonify({
         "message": "Task deleted successfully!"
     })
+
+
 @app.route("/complete_task/<int:task_id>", methods=["PUT"])
 def complete_task(task_id):
     conn = sqlite3.connect("tasks.db")
     cursor = conn.cursor()
 
     cursor.execute(
-        "UPDATE tasks SET completed = 1 WHERE id = ?",
+        """
+        UPDATE tasks
+        SET completed = 1
+        WHERE id = ?
+        """,
         (task_id,)
     )
 
@@ -105,6 +118,8 @@ def complete_task(task_id):
     return jsonify({
         "message": "Task completed successfully!"
     })
+
+
 @app.route("/clear_tasks", methods=["DELETE"])
 def clear_tasks():
     conn = sqlite3.connect("tasks.db")
@@ -118,6 +133,7 @@ def clear_tasks():
     return jsonify({
         "message": "All tasks deleted successfully!"
     })
+
 
 if __name__ == "__main__":
     app.run(debug=True)
