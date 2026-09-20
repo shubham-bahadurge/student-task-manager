@@ -164,3 +164,21 @@ function loadTasks() {
 
 
 loadTasks();
+function filterTasks() {
+    const searchText = document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase();
+
+    const taskItems = document.querySelectorAll("#taskList p");
+
+    taskItems.forEach(item => {
+        const taskText = item.textContent.toLowerCase();
+
+        if (taskText.includes(searchText)) {
+            item.style.display = "";
+        } else {
+            item.style.display = "none";
+        }
+    });
+}
