@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Task Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>📚 Student Task Manager</h1>
+
+   <p>📖 Organize your subjects, tasks, and deadlines in one place.</p>
+    <input type="text" id="subject" placeholder="Enter subject">
+    <input type="date" id="deadline">
+
+    <input type="text" id="taskInput" placeholder="Enter your task">
+
+    <button onclick="addTask()">Add Task</button>
+    <h3 id="taskCount">Total Tasks: 0</h3>
+    <div id="taskList"></div>
+    <button onclick="clearTasks()">🗑️ Clear All Tasks</button>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
