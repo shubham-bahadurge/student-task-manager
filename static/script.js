@@ -170,12 +170,32 @@ function filterTasks() {
         .value
         .toLowerCase();
 
-    const taskItems = document.querySelectorAll("#taskList p");
+    const statusFilter =
+        document.getElementById("statusFilter").value;
+
+    const taskItems =
+        document.querySelectorAll("#taskList p");
 
     taskItems.forEach(item => {
         const taskText = item.textContent.toLowerCase();
 
-        if (taskText.includes(searchText)) {
+        const isCompleted =
+            item.querySelector("button").disabled;
+
+        const matchesSearch =
+            taskText.includes(searchText);
+
+        let matchesStatus = true;
+
+        if (statusFilter === "completed") {
+            matchesStatus = isCompleted;
+        }
+
+        if (statusFilter === "pending") {
+            matchesStatus = !isCompleted;
+        }
+
+        if (matchesSearch && matchesStatus) {
             item.style.display = "";
         } else {
             item.style.display = "none";

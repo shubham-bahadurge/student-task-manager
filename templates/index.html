@@ -23,6 +23,11 @@
     placeholder="🔍 Search tasks..."
     oninput="filterTasks()"
 >
+<select id="statusFilter" onchange="filterTasks()">
+    <option value="all">📋 All Tasks</option>
+    <option value="pending">⏳ Pending</option>
+    <option value="completed">✅ Completed</option>
+</select>
     <div id="taskList"></div>
     <button onclick="clearTasks()">🗑️ Clear All Tasks</button>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
